@@ -31,12 +31,16 @@ func (t *TcpLinker) pid() uint8 {
 }
 
 func (t *TcpLinker) LogOut() {
-	//TODO implement me
-	panic("implement me")
+	logout, err := dlt698.CreateLogOut(t.ClientId, uint16(t.HeartBeat), t.pid(), 0x00)
+	if err != nil {
+		logs.Logger.Errorf("%s create logout failed: %v", t.MasterName, err)
+		return
+	}
+	t.Send(logout)
 }
 
 func (t *TcpLinker) Login() {
-	login, err := dlt698.CreateLogin(t.ClientId, 60, t.pid(), 0x00)
+	login, err := dlt698.CreateLogin(t.ClientId, uint16(t.HeartBeat), t.pid(), 0x00)
 	if err != nil {
 		logs.Logger.Errorf("%s create login failed: %v", t.MasterName, err)
 		return

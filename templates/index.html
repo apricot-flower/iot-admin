@@ -59,8 +59,8 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin: 0 auto;
-            width: 98%;
-            max-width: 1200px;
+            width: 95%;
+            max-width: none;
         }
         .form-box h2 {
             margin-bottom: 20px;
@@ -225,6 +225,11 @@
             background-size: 16px;
         }
 
+
+        .form-box th:nth-child(11), .form-box td:nth-child(11) {
+            width: 30%; /* 根据实际情况调整 */
+        }
+
     </style>
     <script>
         function showContent(contentId) {
@@ -309,6 +314,7 @@
                     <td>${config.password}</td>
                     <td>${config.login_topic}</td>
                     <td>${config.login_response}</td>
+                    <td>${config.heart_beat}</td>
                 `;
                         tableBody.appendChild(row);
                     });
@@ -358,6 +364,7 @@
 <div class="nav-bar">
     <a href="javascript:void(0);" onclick="showContent('home')">首页</a>
     <a href="javascript:void(0);" onclick="showContent('main-config')">主站配置</a>
+    <a href="javascript:void(0);" onclick="showContent('server-config')">通用配置</a>
 </div>
 
 <div id="home" class="content-section">
@@ -388,6 +395,7 @@
                 <th>密码</th>
                 <th>登录Topic</th>
                 <th>登回Topic</th>
+                <th>心跳周期（单位：秒）</th>
             </tr>
             </thead>
             <tbody id="tableBody">
@@ -396,9 +404,29 @@
     </div>
 </div>
 
-<div id="message-config" class="content-section hidden">
-    <h2>消息配置</h2>
-    <p>这里是消息配置的内容。</p>
+<div id="server-config" class="content-section hidden" style="padding: 20px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 20px;">
+    <h2 style="margin-top: 0;">通用配置</h2>
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="display: flex; align-items: center;">
+            <label for="ip" style="font-weight: bold; width: 100px;">web端口:</label>
+            <span id="ip" style="flex-grow: 1;"></span>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <label for="port" style="font-weight: bold; width: 150px;">消息总线端口:</label>
+            <span id="port" style="flex-grow: 1;"></span>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <label for="type" style="font-weight: bold; width: 100px;">本机编码:</label>
+            <span id="types" style="flex-grow: 1;"></span>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <label for="name" style="font-weight: bold; width: 100px;">安装位置:</label>
+            <span id="names" style="flex-grow: 1;"></span>
+        </div>
+        <div class="button-container" style="width: 200px; background-color: #333333">
+            <button onclick="">修改</button>
+        </div>
+    </div>
 </div>
 
 
@@ -453,6 +481,10 @@
             <div class="form-group">
                 <label for="reply_topic">登回Topic:</label>
                 <input type="text" id="reply_topic" name="reply_topic">
+            </div>
+            <div class="form-group">
+                <label for="heart_beat">心跳周期（单位：秒）:</label>
+                <input type="text" id="heart_beat" name="heart_beat">
             </div>
         </div>
         <div class="form-buttons">

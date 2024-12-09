@@ -48,4 +48,4 @@ require (
 
 )
 
-replace "dlt698" => "C:\\Users\\dev\\GolandProjects\\protocol-core\\dlt698"
+replace "dlt698" => "../protocol-core/dlt698"

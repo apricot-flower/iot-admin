@@ -27,6 +27,8 @@ func init() {
 }
 
 func (d *DbClient) validate() {
+	d.lock.Lock()
+	defer d.lock.Unlock()
 	//验证主站表是否存在
 	masterFlag := d.db.Migrator().HasTable(&Master{})
 	if !masterFlag {
@@ -35,9 +37,25 @@ func (d *DbClient) validate() {
 			logs.Logger.Errorf("create sqlite table master err:%v", err)
 		}
 	}
+	busConfigFlag := d.db.Migrator().HasTable(&BusConfig{})
+	if !busConfigFlag {
+		err := d.db.Migrator().CreateTable(&BusConfig{})
+		if err != nil {
+			logs.Logger.Errorf("create sqlite table BusConfig err:%v", err)
+		}
+	}
+	serverConfigFlag := d.db.Migrator().HasTable(&ServerConfig{})
+	if !serverConfigFlag {
+		err := d.db.Migrator().CreateTable(&ServerConfig{})
+		if err != nil {
+			logs.Logger.Errorf("create sqlite table ServerConfig err:%v", err)
+		}
+	}
 }
 
 func SelectMasters() ([]Master, error) {
+	IotDbClient.lock.Lock()
+	defer IotDbClient.lock.Unlock()
 	var masters []Master
 	result := IotDbClient.db.Find(&masters)
 	if result.Error != nil {
@@ -47,9 +65,22 @@ func SelectMasters() ([]Master, error) {
 }
 
 func InsertMaster(master *Master) {
+	IotDbClient.lock.Lock()
+	defer IotDbClient.lock.Unlock()
 	IotDbClient.db.Save(master)
 }
 
 func DeleteMasterByIds(ids []string) {
+	IotDbClient.lock.Lock()
+	defer IotDbClient.lock.Unlock()
 	IotDbClient.db.Delete(&Master{}, ids)
+}
+
+// SelectServerConfig 查询通用配置
+func SelectServerConfig() *ServerConfig {
+	IotDbClient.lock.Lock()
+	defer IotDbClient.lock.Unlock()
+	serverConfig := &ServerConfig{}
+	IotDbClient.db.Take(serverConfig)
+	return serverConfig
 }

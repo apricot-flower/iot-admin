@@ -20,13 +20,13 @@ type MqttLinker struct {
 }
 
 func (m *MqttLinker) LogOut() {
-	logout := &mqtt_protocol.LoginOrLogout{FrameType: "logout", Ts: time.Now().UnixNano(), ClientId: m.ClientId, Username: m.Username, Password: m.Password, HeartBeat: 60}
+	logout := &mqtt_protocol.LoginOrLogout{FrameType: "logout", Ts: time.Now().UnixNano(), ClientId: m.ClientId, Username: m.Username, Password: m.Password, HeartBeat: m.HeartBeat}
 	m.Send(m.LoginTopic, 1, false, logout)
 	logs.Logger.Debugf("%s logouting", m.MasterName)
 }
 
 func (m *MqttLinker) Login() {
-	login := &mqtt_protocol.LoginOrLogout{FrameType: "login", Ts: time.Now().UnixNano(), ClientId: m.ClientId, Username: m.Username, Password: m.Password, HeartBeat: 60}
+	login := &mqtt_protocol.LoginOrLogout{FrameType: "login", Ts: time.Now().UnixNano(), ClientId: m.ClientId, Username: m.Username, Password: m.Password, HeartBeat: m.HeartBeat}
 	m.Send(m.LoginTopic, 1, false, login)
 	logs.Logger.Debugf("%s logining", m.MasterName)
 }

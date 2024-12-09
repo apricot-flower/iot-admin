@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"iot-admin/bus"
 	"iot-admin/logs"
 	"iot-admin/master"
 	"iot-admin/source"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +16,7 @@ import (
 func main() {
 	//初始化主站连接
 	master.Connects()
+	bus.OpenMsgBus()
 	web()
 }
 
@@ -25,7 +28,8 @@ func web() {
 	r.GET("/maters", masters)
 	r.POST("/insert_master", insertMaster)
 	r.POST("/delete_master", deleteMaster)
-	err := r.Run(":8080")
+	serverConfig := source.SelectServerConfig()
+	err := r.Run(":" + strconv.Itoa(serverConfig.WebConfig))
 	if err != nil {
 		logs.Logger.Errorf("web server start error:%v", err)
 	}
@@ -51,9 +55,14 @@ func insertMaster(c *gin.Context) {
 	data, _ := c.GetRawData()
 	var body map[string]string
 	_ = json.Unmarshal(data, &body)
-	masterConfig := &source.Master{Id: time.Now().UnixNano(), MasterType: body["type"], MasterName: body["name"], MasterMark: body["description"], Host: body["address"], ClientId: body["client_id"], Username: body["account"], Password: body["password"], LoginTopic: body["login_topic"], LoginResponse: body["reply_topic"]}
-	source.InsertMaster(masterConfig)
-	c.JSON(http.StatusOK, gin.H{"success": true})
+	result, err := strconv.ParseInt(body["heart_beat"], 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"success": false})
+	} else {
+		masterConfig := &source.Master{Id: time.Now().UnixNano(), MasterType: body["type"], MasterName: body["name"], MasterMark: body["description"], Host: body["address"], ClientId: body["client_id"], Username: body["account"], Password: body["password"], LoginTopic: body["login_topic"], LoginResponse: body["reply_topic"], HeartBeat: result}
+		source.InsertMaster(masterConfig)
+		c.JSON(http.StatusOK, gin.H{"success": true})
+	}
 }
 
 // 删除主站配置
